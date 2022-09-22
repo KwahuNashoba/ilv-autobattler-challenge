@@ -2,6 +2,7 @@
 {
     interface IBattleSimulation
     {
+        public GameState GameStateeee { get; }
         public GameStatus Tick(float elapsedTime);
     }
     public enum GameStatus

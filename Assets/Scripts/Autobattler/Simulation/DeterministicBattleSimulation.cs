@@ -1,4 +1,5 @@
 ﻿using Autobattler.Data;
+using Autobattler.Units;
 using System;
 using System.Collections.Generic;
 
@@ -8,14 +9,18 @@ namespace Autobattler.Simulation
     {
         private GameState _gameState;
         private readonly float _stepTime;
-        private readonly GameStateConfig _gameStateConfig;
+        private readonly LevelConfigData _gameStateConfig;
 
         private float lastTickTime = 0;
 
-        public DeterministicBattleSimulation(float stepTime, GameStateConfig gameStateConfig)
+        public GameState GameStateeee => _gameState;
+
+        public DeterministicBattleSimulation(float stepTime, LevelConfigData gameStateConfig)
         {
             _stepTime = stepTime;
             _gameStateConfig = gameStateConfig;
+
+            InitGameState(gameStateConfig);
         }
 
         public GameStatus Tick(float elapsedTime)
@@ -52,6 +57,8 @@ namespace Autobattler.Simulation
 
         private int CalculateStepCount(float elapsedTime)
         {
+            if (lastTickTime == 0) return 1; // first tick
+
             float deltaTime = elapsedTime - lastTickTime;
             return (int)(deltaTime / _stepTime);
         }
@@ -106,6 +113,16 @@ namespace Autobattler.Simulation
             {
                 return GameStatus.Playing;
             }
+        }
+
+        private void InitGameState(LevelConfigData levelConfig)
+        {
+            // create initial position for all units based on deterministic random seed based algorithm
+            _gameState = new GameState();
+            _gameState.GridWidth = levelConfig.GridWidth;
+            _gameState.GridHeight= levelConfig.GridHeight;
+            _gameState.PlayerUnits = new List<IUnitBehavior>(){ new UnitBehaviour(10, 10) };
+            _gameState.EnemyUnits = new List<IUnitBehavior>(){ new UnitBehaviour(20, 20) };
         }
     }
 }
